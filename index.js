@@ -191,6 +191,8 @@ function parser(tokens) {
         };
       }
     }
+
+    throw new TypeError(token.type);
   }
 
   return ast;
@@ -242,7 +244,6 @@ function traverser(ast, visitor) {
       case "NumberLiteral":
         break;
 
-      // 同样，如果不能识别当前的结点，那么就抛出一个错误。
       default:
         throw new TypeError(node.type);
     }
@@ -251,13 +252,10 @@ function traverser(ast, visitor) {
   traverseNode(ast, null);
 }
 
-/**
- * 定义转换函数，
- * @param {*} ast
- */
+//转换函数  接受一个抽象语法树
 function transformer(ast) {
-  // 创建新的 ast 抽象树
-  var newAst = {
+  // 创建一个新的 ast 抽象语法树
+  let newAst = {
     type: "Program",
     body: [],
     sourceType: "script",
@@ -285,10 +283,7 @@ function transformer(ast) {
   return newAst;
 }
 
-/**
- * 生成代码的构成，基于AST
- * @param {*} node
- */
+//基于新的AST，生成代码
 function generator(node) {
   // 对于不同类型的结点分开处理
   switch (node.type) {
@@ -318,10 +313,10 @@ function generator(node) {
 }
 
 function compiler(input) {
-  var tokens = tokenizer(input);
-  var ast = parser(tokens);
-  var afterAST = transformer(ast);
-  var output = generator(afterAST);
+  const tokens = tokenizer(input);
+  const ast = parser(tokens);
+  const afterAST = transformer(ast);
+  const output = generator(afterAST);
   return output;
 }
 

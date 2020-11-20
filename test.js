@@ -14,4 +14,4 @@ const str = `
 const tokenizerStr = tokenizer(str);
 // console.log(tokenizerStr);
 const parserStr = parser(tokenizerStr);
-console.log(parserStr);
+// console.log(parserStr);
