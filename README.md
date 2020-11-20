@@ -31,6 +31,33 @@ let a=1
 
 ​	根据词素 生成抽象语法树 ，描述源代码各部分之间关系
 
+```js
+{
+    type: 'Program',
+    body: [
+        {
+            type: 'VariableDeclaration',
+            declarations: [{
+                type: 'VariableDeclarator',
+                id: {
+                    type: 'Identifier',
+                    name: a,
+                }, // 定义的变量
+                init: {
+                    type: 'NumberLiteral',
+                    value: Number(1),
+                    row:1
+                } // 赋予的值
+            }],
+            kind: 'let',
+        }
+    ],
+    sourceType: 'script'//表示是一个脚本
+}
+```
+
+
+
 ##### 遍历
 
 ##### 转换	

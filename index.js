@@ -90,59 +90,51 @@ function tokenizer(input) {
   return tokens;
 }
 
-/**
- * 语法解析函数，接受所有的token
- * 此程序只对AST的赋值做了处理，没有处理构建运算表达式
- * @param {*} tokens 所有的token
- */
+//语法解析 接受所有的token 生成AST
 function parser(tokens) {
   //记录当前解析的token的位置
-  var current = 0;
+  let current = 0;
 
-  //声明一个AST的基本架构，根节点为‘program’，表示是一个程序
-  var ast = {
+  //创建一个抽象语法树，根节点为‘program’，表示是一个程序
+  let ast = {
     type: "Program",
     body: [],
     sourceType: "script", //表示是一个脚本
   };
+
   //循环所有的token，按照对应的语法开始构建AST
   while (current < tokens.length) {
     ast.body.push(walk());
   }
-  /**
-   * 通过遍历tokens，来构建对应的一颗AST树，需要有对应的语法规范
-   */
-  function walk() {
-    //从当前token开始解析
-    var token = tokens[current];
-    //var
 
-    //需要根据语法来处理不同的token
+  //递归遍历tokens，生成AST
+  function walk() {
+    //当前需要解析的token
+    const token = tokens[current];
+
+    // 数字
     if (token.type === "Number") {
-      // 如果是，current 自增。
       current++;
-      // 然后我们会返回一个新的 AST 结点
+      //返回一个新的 AST 结点
       return {
-        type: "Literal",
+        type: "NumberLiteral",
         value: Number(token.value),
         row: token.value,
       };
     }
 
-    // 检查是不是变量类型 let a=1
+    // 变量
     if (token.type === "Identifier") {
-      // 如果是，current 自增。
       current++;
-      // 然后我们会返回一个新的 AST 结点
+      //返回一个新的 AST 结点
       return {
         type: "Identifier",
         name: token.value,
       };
     }
 
-    // 检查是不是运算符类型
+    // 标点符号
     if (token.type === "Punctuator") {
-      // 如果是，current 自增。
       current++;
       // 判断运算符类型，根据类型返回新的 AST 节点
       if (/[\+\-\*/]/im.test(token.value)) {
@@ -152,7 +144,6 @@ function parser(tokens) {
           operator: token.value,
         };
       }
-
       if (/\=/.test(token.value)) {
         //赋值字符
         return {
@@ -162,36 +153,36 @@ function parser(tokens) {
       }
     }
 
-    // 检查是不是关键字
+    // 关键字
     if (token.type === "Keyword") {
-      var value = token.value;
-      // 检查是不是定义语句 let \var等等
+      const value = token.value;
+      // 检查是不是 let var const等等
       if (value === "var" || value === "let" || value === "const") {
-        // var
         current++;
 
-        // 获取后边要定义的变量，var a;//获取a
-        var variable = walk(); //返回变量字符
+        // 获取关键字后面的变量名，let a = 1; //获取a
+        const variable = walk(); //返回变量字符
         // 判断是否是赋值符号
-        var equal = walk(); //获取变量后面的下一个字符可能是var a=1;可能是var a;
-        var rightVar;
+        const equal = walk(); //获取变量后面的下一个字符可能是let a=1;可能是let a;
 
-        //var a =
-        //赋值的情况，获取表达式的内容
+        let rightVar; // = 右边的值
+        //赋值的情况，获取表达式的内容  let a = 1
         if (equal.operator === "=") {
           // 获取所赋予的值
           rightVar = walk();
         } else {
-          // 不是赋值符号，说明只是定义变量
+          // 不是赋值符号，说明只是定义变量 let a
           rightVar = null;
           current--;
         }
+
         // 定义声明
-        var declaration = {
+        const declaration = {
           type: "VariableDeclarator",
           id: variable, // 定义的变量
           init: rightVar, // 赋予的值
         };
+
         // 定义要返回的节点
         return {
           type: "VariableDeclaration",
@@ -202,7 +193,6 @@ function parser(tokens) {
     }
   }
 
-  //返回最后构建成功的AST
   return ast;
 }
 
@@ -249,7 +239,7 @@ function traverser(ast, visitor) {
 
       // 如果是变量和数值，直接退出
       case "Identifier":
-      case "Literal":
+      case "NumberLiteral":
         break;
 
       // 同样，如果不能识别当前的结点，那么就抛出一个错误。
@@ -319,7 +309,7 @@ function generator(node) {
       return node.name;
 
     // 处理数值
-    case "Literal":
+    case "NumberLiteral":
       return node.value;
 
     default:

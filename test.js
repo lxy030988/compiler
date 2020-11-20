@@ -1,8 +1,17 @@
-var compiler = require("./index");
-var str = `
+const {
+  tokenizer,
+  parser,
+  traverser,
+  transformer,
+  generator,
+  compiler,
+} = require("./index");
+
+const str = `
     let a=12
     let b=1
 `;
-
-var newStr = compiler.tokenizer(str);
-console.log(newStr);
+const tokenizerStr = tokenizer(str);
+// console.log(tokenizerStr);
+const parserStr = parser(tokenizerStr);
+console.log(parserStr);
