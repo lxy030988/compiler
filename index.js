@@ -206,7 +206,7 @@ function traverser(ast, visitor) {
   // 遍历树中每个节点，调用 traverseNode
   function traverseArray(array, parent) {
     if (typeof array.forEach === "function")
-      array.forEach(function (child) {
+      array.forEach((child) => {
         traverseNode(child, parent);
       });
   }
@@ -214,7 +214,7 @@ function traverser(ast, visitor) {
   // 处理 ast 节点的函数, 使用 visitor 定义的转换函数进行转换
   function traverseNode(node, parent) {
     // 首先看看 visitor 中有没有对应 type 的处理函数。
-    var method = visitor[node.type];
+    const method = visitor[node.type];
     // 如果有，参入参数
     if (method) {
       method(node, parent);
@@ -239,7 +239,7 @@ function traverser(ast, visitor) {
         traverseArray(node.right, node);
         break;
 
-      // 如果是变量和数值，直接退出
+        // 如果是变量和数值，直接退出
       case "Identifier":
       case "NumberLiteral":
         break;
@@ -291,19 +291,19 @@ function generator(node) {
     case "Program":
       return node.body.map(generator).join("\n");
 
-    // VariableDeclaration 结点  var a类似的语句，也有可能声明多个变量
+      // VariableDeclaration 结点  var a类似的语句，也有可能声明多个变量
     case "VariableDeclaration":
       return node.kind + " " + node.declarations.map(generator).join("\n");
-    //var  a = 1
-    // VariableDeclarator 节点 有赋值表达式的情况
+      //var  a = 1
+      // VariableDeclarator 节点 有赋值表达式的情况
     case "VariableDeclarator":
       return generator(node.id) + " = " + generator(node.init);
 
-    // 处理变量
+      // 处理变量
     case "Identifier":
       return node.name;
 
-    // 处理数值
+      // 处理数值
     case "NumberLiteral":
       return node.value;
 
