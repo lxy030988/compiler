@@ -74,7 +74,7 @@ function tokenizer(input) {
           value: value,
         });
       } else {
-        //变量
+        //变量名
         tokens.push({
           type: "Identifier",
           value: value,
