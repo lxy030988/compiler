@@ -58,11 +58,40 @@ let a=1
 
 
 
-##### 遍历
-
-##### 转换
+##### 遍历 + 转换
 
 添加 删除 替换属性节点   改变现有的抽象语法树 =》目标抽象语法树
 
+```js
+{
+    type: 'Program',
+    body: [
+        {
+            type: 'VariableDeclaration',
+            declarations: [{
+                type: 'VariableDeclarator',
+                id: {
+                    type: 'Identifier',
+                    name: a,
+                }, // 定义的变量
+                init: {
+                    type: 'NumberLiteral',
+                    value: Number(1),
+                    row:1
+                } // 赋予的值
+            }],
+            kind: 'var',
+        }
+    ],
+    sourceType: 'script'//表示是一个脚本
+}
+```
+
+
+
 ##### 代码生成
+
+```js
+var a=1
+```
 

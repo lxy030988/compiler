@@ -111,7 +111,7 @@ function parser(tokens) {
   function walk() {
     //当前需要解析的token
     const token = tokens[current];
-
+    if (!token) return {};
     // 数字
     if (token.type === "Number") {
       current++;
@@ -172,7 +172,10 @@ function parser(tokens) {
           rightVar = walk();
         } else {
           // 不是赋值符号，说明只是定义变量 let a
-          rightVar = null;
+          rightVar = {
+            type: "Null",
+            value: null,
+          };
           current--;
         }
 
@@ -239,7 +242,7 @@ function traverser(ast, visitor) {
         traverseArray(node.right, node);
         break;
 
-        // 如果是变量和数值，直接退出
+      // 如果是变量和数值，直接退出
       case "Identifier":
       case "NumberLiteral":
         break;
@@ -262,14 +265,15 @@ function transformer(ast) {
   };
 
   // 在父结点上定义一个属性 context（上下文），之后，就可以把结点放入他们父结点的 context 中。
+  // context是一个从旧的抽象语法树到新的抽象语法树的引用
   ast._context = newAst.body;
 
   // 我们把 AST 和 visitor 函数传入遍历器
   // 遍历的过程中，访问遍历器具体的逻辑，直接生成新的AST
   traverser(ast, {
     // 把 VariableDeclaration kind 属性进行转换
-    VariableDeclaration: function (node, parent) {
-      var variableDeclaration = {
+    VariableDeclaration(node, parent) {
+      let variableDeclaration = {
         type: "VariableDeclaration",
         declarations: node.declarations,
         kind: "var",
@@ -279,7 +283,7 @@ function transformer(ast) {
     },
   });
 
-  // 最后返回创建好的新 AST。
+  // 最后返回创建好的新 AST
   return newAst;
 }
 
@@ -291,21 +295,25 @@ function generator(node) {
     case "Program":
       return node.body.map(generator).join("\n");
 
-      // VariableDeclaration 结点  var a类似的语句，也有可能声明多个变量
+    // VariableDeclaration 结点  var a类似的语句，也有可能声明多个变量
     case "VariableDeclaration":
       return node.kind + " " + node.declarations.map(generator).join("\n");
-      //var  a = 1
-      // VariableDeclarator 节点 有赋值表达式的情况
+
+    // VariableDeclarator 节点   var a | var a=1
     case "VariableDeclarator":
+      if (generator(node.init) == null) return generator(node.id);
       return generator(node.id) + " = " + generator(node.init);
 
-      // 处理变量
+    // 处理变量
     case "Identifier":
       return node.name;
 
-      // 处理数值
+    // 处理数值
     case "NumberLiteral":
       return node.value;
+
+    case "Null":
+      return null;
 
     default:
       throw new TypeError(node.type);
