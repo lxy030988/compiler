@@ -165,14 +165,14 @@ function parser(tokens) {
         // 判断是否是赋值符号
         const equal = walk(); //获取变量后面的下一个字符可能是let a=1;可能是let a;
 
-        let rightVar; // = 右边的值
+        let rightValue; // = 右边的值
         //赋值的情况，获取表达式的内容  let a = 1
         if (equal.operator === "=") {
           // 获取所赋予的值
-          rightVar = walk();
+          rightValue = walk();
         } else {
           // 不是赋值符号，说明只是定义变量 let a
-          rightVar = {
+          rightValue = {
             type: "Null",
             value: null,
           };
@@ -183,7 +183,7 @@ function parser(tokens) {
         const declaration = {
           type: "VariableDeclarator",
           id: variable, // 定义的变量
-          init: rightVar, // 赋予的值
+          init: rightValue, // 赋予的值
         };
 
         // 定义要返回的节点
