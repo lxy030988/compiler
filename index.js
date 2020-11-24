@@ -208,24 +208,24 @@ function parser(tokens) {
 function traverser(ast, visitor) {
   // 遍历树中每个节点，调用 traverseNode
   function traverseArray(array, parent) {
-    if (typeof array.forEach === "function")
+    if (typeof array.forEach === "function") {
       array.forEach((child) => {
         traverseNode(child, parent);
       });
+    }
   }
 
   // 处理 ast 节点的函数, 使用 visitor 定义的转换函数进行转换
   function traverseNode(node, parent) {
     // 首先看看 visitor 中有没有对应 type 的处理函数。
     const method = visitor[node.type];
-    // 如果有，参入参数
+
     if (method) {
       method(node, parent);
     }
 
-    // 下面对每一个不同类型的结点分开处理。
+    // 下面对每一个不同类型的结点分开处理
     switch (node.type) {
-      // 从顶层的 Program 开始
       case "Program":
         traverseArray(node.body, node);
         break;
@@ -275,11 +275,22 @@ function transformer(ast) {
     VariableDeclaration(node, parent) {
       let variableDeclaration = {
         type: "VariableDeclaration",
-        declarations: node.declarations,
+        declarations: [],
         kind: "var",
       };
+      node._context = variableDeclaration.declarations;
       // 把新的 VariableDeclaration 放入到 context 中。
       parent._context.push(variableDeclaration);
+    },
+    VariableDeclarator(node, parent) {
+      let declaration = {
+        type: "VariableDeclarator",
+        id: node.id,
+        // id: { ...node.id, name: "_" + node.id.name },
+        init: node.init,
+      };
+      node._context = declaration;
+      parent._context.push(declaration);
     },
   });
 
