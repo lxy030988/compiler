@@ -229,6 +229,25 @@ function parser(tokens) {
           kind: value,
         };
       }
+
+      //return
+      if (value === "return") {
+        const res = {
+          type: "ReturnStatement",
+          arguments: [],
+        };
+        token = tokens[++current];
+        while (token.value != "}") {
+          if (token.value == "+") {
+            token = tokens[++current];
+            continue;
+          }
+          // 调用walk函数，walk函数会返回一个节点  然后我们将这个节点添加到 res.arguments
+          res.arguments.push(walk());
+          token = tokens[current];
+        }
+        return res;
+      }
     }
 
     throw new TypeError(token.type);
@@ -268,6 +287,10 @@ function traverser(ast, visitor) {
 
       case "VariableDeclaration":
         traverseArray(node.declarations, node);
+        break;
+
+      case "ReturnStatement":
+        traverseArray(node.arguments, node);
         break;
 
       case "VariableDeclarator":
@@ -332,8 +355,11 @@ function transformer(ast) {
         declaration.init.type = "FunctionExpression";
         node.init._context = declaration.init.body = [];
       }
-      node._context = declaration;
+      // node._context = declaration;
       parent._context.push(declaration);
+    },
+    ReturnStatement(node, parent) {
+      parent._context.push(node);
     },
   });
 
@@ -360,8 +386,11 @@ function generator(node) {
 
     case "FunctionExpression":
       return `function(${node.params.map(generator).join(",")}){
-        ${node.body.map(generator).join("\n")}
-      }`;
+  ${node.body.map(generator).join("\n")}
+}`;
+
+    case "ReturnStatement":
+      return `  return ${node.arguments.map(generator).join(" + ")}`;
 
     // 处理变量
     case "Identifier":
