@@ -110,7 +110,7 @@ function parser(tokens) {
   //递归遍历tokens，生成AST
   function walk() {
     //当前需要解析的token
-    const token = tokens[current];
+    let token = tokens[current];
     if (!token) return {};
     // 数字
     if (token.type === "Number") {
@@ -150,6 +150,42 @@ function parser(tokens) {
           type: "AssignmentExpression",
           operator: token.value,
         };
+      }
+      // 处理小括号
+      if (/\(/.test(token.value)) {
+        const inBrackets = [];
+        token = tokens[current];
+        while (!/\)/.test(token.value)) {
+          // 调用walk函数，walk函数会返回一个节点  然后我们将这个节点添加到inBrackets
+          inBrackets.push(walk());
+          token = tokens[current];
+        }
+        token = tokens[++current]; //跳过 )
+
+        if (token.value == "=>") {
+          token = tokens[++current];
+          if (token.value == "{") {
+            const res = {
+              type: "ArrowFunctionExpression",
+              params: inBrackets,
+              body: [],
+            };
+            token = tokens[++current];
+            while (token.value != "}") {
+              // 调用walk函数，walk函数会返回一个节点  然后我们将这个节点添加到 res.body
+              res.body.push(walk());
+              token = tokens[current];
+            }
+            current++; //跳过 }
+            return res;
+          }
+        } else {
+          current--;
+          return {
+            type: "BinaryExpression",
+            inBrackets,
+          };
+        }
       }
     }
 
@@ -236,6 +272,9 @@ function traverser(ast, visitor) {
 
       case "VariableDeclarator":
         traverseArray(node.init, node);
+        if (node.init.body) {
+          traverseArray(node.init.body, node.init);
+        }
         break;
 
       case "AssignmentExpression":
@@ -287,8 +326,12 @@ function transformer(ast) {
         type: "VariableDeclarator",
         id: node.id,
         // id: { ...node.id, name: "_" + node.id.name },
-        init: node.init,
+        init: { ...node.init },
       };
+      if (node.init.type == "ArrowFunctionExpression") {
+        declaration.init.type = "FunctionExpression";
+        node.init._context = declaration.init.body = [];
+      }
       node._context = declaration;
       parent._context.push(declaration);
     },
@@ -314,6 +357,11 @@ function generator(node) {
     case "VariableDeclarator":
       if (generator(node.init) == null) return generator(node.id);
       return generator(node.id) + " = " + generator(node.init);
+
+    case "FunctionExpression":
+      return `function(${node.params.map(generator).join(",")}){
+        ${node.body.map(generator).join("\n")}
+      }`;
 
     // 处理变量
     case "Identifier":
