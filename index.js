@@ -160,23 +160,23 @@ function parser(tokens) {
           inBrackets.push(walk());
           token = tokens[current];
         }
-        token = tokens[++current]; //跳过 )
+        token = tokens[++current]; //跳过 ）
 
         if (token.value == "=>") {
           token = tokens[++current];
-          if (token.value == "{") {
+          if (/\{/.test(token.value)) {
             const res = {
               type: "ArrowFunctionExpression",
               params: inBrackets,
               body: [],
             };
             token = tokens[++current];
-            while (token.value != "}") {
+            while (!/\}/.test(token.value)) {
               // 调用walk函数，walk函数会返回一个节点  然后我们将这个节点添加到 res.body
               res.body.push(walk());
               token = tokens[current];
             }
-            current++; //跳过 }
+            current++; //跳过 ｝
             return res;
           }
         } else {
@@ -237,7 +237,7 @@ function parser(tokens) {
           arguments: [],
         };
         token = tokens[++current];
-        while (token.value != "}") {
+        while (!/\}/.test(token.value)) {
           if (token.value == "+") {
             token = tokens[++current];
             continue;
