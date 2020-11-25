@@ -157,6 +157,9 @@ function parser(tokens) {
         token = tokens[current];
         while (!/\)/.test(token.value)) {
           // 调用walk函数，walk函数会返回一个节点  然后我们将这个节点添加到inBrackets
+          if (token.value == ",") {
+            token = tokens[++current];
+          }
           inBrackets.push(walk());
           token = tokens[current];
         }

@@ -2,9 +2,9 @@ const { compiler } = require("./index");
 
 const str = `
 
-const a = (b) => {
+const a = (b,d) => {
   let c=1
-  return b+c
+  return b+c+d
 }
 
 `;
