@@ -98,3 +98,19 @@ let a=1
 var a=1
 ```
 
+
+
+#### 进阶
+
+```js
+const a = (b) => {
+  let c=1
+  return b+c
+}
+==>
+var a = function(b){
+  var c = 1
+  return b + c
+}
+```
+
