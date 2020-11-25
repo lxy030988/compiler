@@ -2,12 +2,9 @@ const { compiler } = require("./index");
 
 const str = `
 
-let a = 1
+let a = 12
+const b = 21
 
 `;
 
 console.log(compiler(str));
-
-const a = (b) => {
-  return b;
-};
