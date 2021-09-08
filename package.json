@@ -1,0 +1,25 @@
+{
+  "name": "compiler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lxy030988/compiler.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lxy030988/compiler/issues"
+  },
+  "homepage": "https://github.com/lxy030988/compiler#readme",
+  "dependencies": {
+    "esprima": "^4.0.1",
+    "estraverse": "^5.2.0",
+    "estraverse-fb": "^1.3.2"
+  }
+}

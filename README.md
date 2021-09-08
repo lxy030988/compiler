@@ -1,6 +1,8 @@
 # compiler
 
-#### 目标
+- [astexplorer](https://astexplorer.net/)
+
+### 目标
 
 ```js
 let a=1  //es6
@@ -8,11 +10,11 @@ let a=1  //es6
 var a=1  //es5
 ```
 
-#### 编译流程
+### 编译流程
 
-##### 词法分析 tokenizer
+### 词法分析 tokenizer
 
-​	生成一个个词素（token） 每一个token表达一个词的特性
+- 生成一个个词素（token） 每一个token表达一个词的特性
 
 ```js
 let a=1
@@ -30,9 +32,9 @@ let a=1
 
 
 
-##### 语法分析 parser
+### 语法分析 parser
 
-​	根据词素 生成抽象语法树 ，描述语法结构
+- 根据词素 生成抽象语法树 ，描述语法结构
 
 ```js
 {
@@ -61,9 +63,9 @@ let a=1
 
 
 
-##### 遍历 traverser + 转换 transformer
+### 遍历 traverser + 转换 transformer
 
-添加 删除 替换属性节点   改变现有的抽象语法树 =》目标抽象语法树
+- 添加 删除 替换属性节点   改变现有的抽象语法树 =》目标抽象语法树
 
 ```js
 {
@@ -92,7 +94,7 @@ let a=1
 
 
 
-##### 代码生成 generator
+### 代码生成 generator
 
 ```js
 var a=1
@@ -100,7 +102,7 @@ var a=1
 
 
 
-#### 进阶
+### 进阶
 
 ```js
 const a = (b) => {
