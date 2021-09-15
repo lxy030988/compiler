@@ -22,7 +22,36 @@ function tokenizer(script) {
   for (let token of gtokenizer(script)) {
     tokens.push(token)
   }
-  return tokens
+  return new TokenReader(tokens)
+}
+
+class TokenReader {
+  constructor(tokens) {
+    this.tokens = tokens
+    this.pos = 0 //索引
+  }
+
+  //读取一个token
+  read() {
+    if (this.pos < this.tokens.length) {
+      return this.tokens[this.pos++] //取完token pos+1 相当于消耗了这个token
+    }
+    return null
+  }
+
+  peek() {
+    if (this.pos < this.tokens.length) {
+      return this.tokens[this.pos]
+    }
+    return null
+  }
+
+  //倒退
+  unread() {
+    if (this.pos > 0) {
+      this.pos--
+    }
+  }
 }
 
 module.exports = tokenizer
