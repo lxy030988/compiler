@@ -1,11 +1,7 @@
 const AstNode = require('./AstNode')
 
 const { NUMBER, PLUS, MULTIPLY } = require('./tokenTypes')
-
-const Program = 'Program'
-const Numeric = 'Numeric'
-const Additive = 'Additive'
-const Multiple = 'Multiple'
+const { Program, Numeric, Additive, Multiple } = require('./nodeTypes')
 
 //2 + 3*4
 // add => multiple | multiple+add

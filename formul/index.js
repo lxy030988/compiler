@@ -6,6 +6,9 @@
 // multiple => NUMBER | NUMBER*multiple
 
 const parse = require('./parse')
+const evaluate = require('./evaluate')
 let source = '2+3*4*5'
 let ast = parse(source)
 console.log(JSON.stringify(ast, null, 2))
+let res = evaluate(ast)
+console.log(res)
