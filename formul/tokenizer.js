@@ -1,7 +1,23 @@
-const { NUMBER, PLUS, MULTIPLY, MINUS, DIVIDE } = require('./tokenTypes')
-const tokensNames = [NUMBER, PLUS, MULTIPLY, MINUS, DIVIDE]
+const {
+  NUMBER,
+  PLUS,
+  MULTIPLY,
+  MINUS,
+  DIVIDE,
+  LEFT_PARA,
+  RIGHT_PARA
+} = require('./tokenTypes')
+const tokensNames = [
+  NUMBER,
+  PLUS,
+  MULTIPLY,
+  MINUS,
+  DIVIDE,
+  LEFT_PARA,
+  RIGHT_PARA
+]
 
-let RegExpObject = /([0-9]+)|(\+)|(\*)|(\-)|(\/)/g
+let RegExpObject = /([0-9]+)|(\+)|(\*)|(\-)|(\/)|(\()|(\))/g
 
 function* gtokenizer(script) {
   let result

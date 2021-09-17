@@ -1,6 +1,14 @@
 const AstNode = require('./AstNode')
 
-const { NUMBER, PLUS, MULTIPLY, MINUS, DIVIDE } = require('./tokenTypes')
+const {
+  NUMBER,
+  PLUS,
+  MULTIPLY,
+  MINUS,
+  DIVIDE,
+  LEFT_PARA,
+  RIGHT_PARA
+} = require('./tokenTypes')
 const {
   Program,
   Numeric,
@@ -15,7 +23,8 @@ const {
 add => minus | minus + add
 minus => multiple | multiple - minus
 multiple => divide | divide * multiple
-divide => NUMBER | NUMBER / divide
+divide => primary | primary / divide
+primary => NUMBER | (add)  基础规则
 从右往左算
 这种出现连续减 或者 连续除 会有问题
 
@@ -96,19 +105,31 @@ function multipleFn(tokenReader) {
 }
 
 function divideFn(tokenReader) {
-  let child1 = numberFn(tokenReader) //先匹配出来一个NUMBER 但是这个乘法规则并没有结束
+  let child1 = primaryFn(tokenReader)
   let node = child1
-  let token = tokenReader.peek() //+
+  let token = tokenReader.peek()
   if (child1 != null && token != null) {
     if (token.type == DIVIDE) {
-      // NUMBER * multiple
-      token = tokenReader.read() //读取并且消耗 *
+      token = tokenReader.read()
       let child2 = divideFn(tokenReader)
       if (child2 != null) {
         node = new AstNode(Divide)
         node.appendChild(child1)
         node.appendChild(child2)
       }
+    }
+  }
+  return node
+}
+
+function primaryFn(tokenReader) {
+  let node = numberFn(tokenReader)
+  if (!node) {
+    let token = tokenReader.peek()
+    if (token != null && token.type == LEFT_PARA) {
+      token = tokenReader.read() //读取并且消耗 (
+      node = additiveFn(tokenReader)
+      token = tokenReader.read() //读取并且消耗 )
     }
   }
   return node
