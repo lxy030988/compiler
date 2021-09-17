@@ -1,11 +1,34 @@
 const AstNode = require('./AstNode')
 
-const { NUMBER, PLUS, MULTIPLY } = require('./tokenTypes')
-const { Program, Numeric, Additive, Multiple } = require('./nodeTypes')
+const { NUMBER, PLUS, MULTIPLY, MINUS, DIVIDE } = require('./tokenTypes')
+const {
+  Program,
+  Numeric,
+  Additive,
+  Multiple,
+  Minus,
+  Divide
+} = require('./nodeTypes')
 
-//2 + 3*4
-// add => multiple | multiple+add
-// multiple => NUMBER | NUMBER*multiple
+/**
+2 + 3*4
+add => minus | minus + add
+minus => multiple | multiple - minus
+multiple => divide | divide * multiple
+divide => NUMBER | NUMBER / divide
+从右往左算
+这种出现连续减 或者 连续除 会有问题
+
+ */
+/**
+正确的结合性
+add => minus + add | minus
+minus =>  multiple - minus | multiple
+multiple =>  divide * multiple | divide
+divide =>  NUMBER / divide | NUMBER
+从左往右算
+左递归的问题
+ */
 
 function toAst(tokenReader) {
   let rootNode = new AstNode(Program)
@@ -18,7 +41,7 @@ function toAst(tokenReader) {
 }
 
 function additiveFn(tokenReader) {
-  let child1 = multipleFn(tokenReader)
+  let child1 = minusFn(tokenReader)
   let node = child1
   let token = tokenReader.peek() //看下一个符合是不是 +
   if (child1 != null && token != null) {
@@ -35,8 +58,26 @@ function additiveFn(tokenReader) {
   return node
 }
 
+function minusFn(tokenReader) {
+  let child1 = multipleFn(tokenReader)
+  let node = child1
+  let token = tokenReader.peek() //看下一个符合是不是 -
+  if (child1 != null && token != null) {
+    if (token.type == MINUS) {
+      token = tokenReader.read()
+      let child2 = minusFn(tokenReader)
+      if (child2 != null) {
+        node = new AstNode(Minus)
+        node.appendChild(child1)
+        node.appendChild(child2)
+      }
+    }
+  }
+  return node
+}
+
 function multipleFn(tokenReader) {
-  let child1 = numberFn(tokenReader) //先匹配出来一个NUMBER 但是这个乘法规则并没有结束
+  let child1 = divideFn(tokenReader)
   let node = child1
   let token = tokenReader.peek() //+
   if (child1 != null && token != null) {
@@ -46,6 +87,25 @@ function multipleFn(tokenReader) {
       let child2 = multipleFn(tokenReader)
       if (child2 != null) {
         node = new AstNode(Multiple)
+        node.appendChild(child1)
+        node.appendChild(child2)
+      }
+    }
+  }
+  return node
+}
+
+function divideFn(tokenReader) {
+  let child1 = numberFn(tokenReader) //先匹配出来一个NUMBER 但是这个乘法规则并没有结束
+  let node = child1
+  let token = tokenReader.peek() //+
+  if (child1 != null && token != null) {
+    if (token.type == DIVIDE) {
+      // NUMBER * multiple
+      token = tokenReader.read() //读取并且消耗 *
+      let child2 = divideFn(tokenReader)
+      if (child2 != null) {
+        node = new AstNode(Divide)
         node.appendChild(child1)
         node.appendChild(child2)
       }
