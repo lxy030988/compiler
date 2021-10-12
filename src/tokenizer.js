@@ -150,9 +150,9 @@ module.exports = {
   tokenizer
 }
 
-let source = '<div id="aa"><span>lxy</span>222</div>'
+// let source = '<div id="aa"><span>lxy</span>222</div>'
 
-console.log(tokenizer(source))
+// console.log(tokenizer(source))
 
 /**
  * [
