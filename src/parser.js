@@ -113,5 +113,5 @@ function parser(sourceCode) {
 
 module.exports = { parser }
 
-let source = '<div id="aa" name="bb"><span>lxy</span>222</div>'
-console.log(JSON.stringify(parser(source), null, 2))
+// let source = '<div id="aa" name="bb"><span>lxy</span>222</div>'
+// console.log(JSON.stringify(parser(source), null, 2))
