@@ -1,16 +1,29 @@
 const { parser } = require('./parser')
 const nodeTypes = require('./nodeTypes')
 
+function replace(parent, oldNode, newNode) {
+  if (parent) {
+    for (const key in parent) {
+      if (parent.hasOwnProperty(key)) {
+        if (parent[key] === oldNode) {
+          parent[key] = newNode
+        }
+      }
+    }
+  }
+}
+
 function traverse(ast, visitor) {
   function traverseArray(array, parent) {
     array.forEach((item) => traverseNode(item, parent))
   }
 
   function traverseNode(node, parent) {
+    let replaceWith = replace.bind(null, parent, node)
     let method = visitor[node.type]
     if (method) {
-      if (typeof method === 'function') method({ node }, parent)
-      else method.enter({ node }, parent)
+      if (typeof method === 'function') method({ node, replaceWith }, parent)
+      else method.enter({ node, replaceWith }, parent)
     }
     switch (node.type) {
       case nodeTypes.Program:
@@ -43,25 +56,25 @@ function traverse(ast, visitor) {
         break
     }
     if (method && method.exit) {
-      method.exit({ node }, parent)
+      method.exit({ node, replaceWith }, parent)
     }
   }
 
   traverseNode(ast, null)
 }
 
-let source = '<div id="aa" name="bb"><span>lxy</span>222</div>'
-let ast = parser(source)
+// let source = '<div id="aa" name="bb"><span>lxy</span>222</div>'
+// let ast = parser(source)
 // console.log(JSON.stringify(ast, null, 2))
-traverse(ast, {
-  JSXOpeningElement: {
-    enter(nodePath, parent) {
-      console.log('JSXOpeningElement enter', nodePath)
-    },
-    exit(nodePath, parent) {
-      console.log('JSXOpeningElement exit', nodePath)
-    }
-  }
-})
+// traverse(ast, {
+//   JSXOpeningElement: {
+//     enter(nodePath, parent) {
+//       console.log('JSXOpeningElement enter', nodePath)
+//     },
+//     exit(nodePath, parent) {
+//       console.log('JSXOpeningElement exit', nodePath)
+//     }
+//   }
+// })
 
 module.exports = { traverse }
