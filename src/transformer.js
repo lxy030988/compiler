@@ -1,4 +1,3 @@
-const { parser } = require('./parser')
 const { traverse } = require('./traverse')
 const nodeTypes = require('./nodeTypes')
 // const t = require('babel-types')
@@ -6,8 +5,8 @@ class t {
   static nullLiteral() {
     return { type: nodeTypes.NullLiteral }
   }
-  static stringLiteral(vaule) {
-    return { type: nodeTypes.StringLiteral, vaule }
+  static stringLiteral(value) {
+    return { type: nodeTypes.StringLiteral, value }
   }
   static identifier(name) {
     return { type: nodeTypes.Identifier, name }
@@ -73,8 +72,3 @@ function transformer(ast) {
 }
 
 module.exports = { transformer }
-
-let source = '<div id="aa" name="bb"><span>lxy</span>222</div>'
-let ast = parser(source)
-transformer(ast)
-console.log(JSON.stringify(ast, null, 2))
