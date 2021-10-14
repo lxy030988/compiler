@@ -1,5 +1,5 @@
 const tokenizer = require('./tokenizer')
-const toAst = require('./toAst')
+const toAst = require('./toAst1')
 
 /**
  *

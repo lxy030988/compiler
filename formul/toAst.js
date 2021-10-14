@@ -37,6 +37,11 @@ multiple =>  divide * multiple | divide
 divide =>  NUMBER / divide | NUMBER
 从左往右算
 左递归的问题
+
+解决这个问题 用扩展的巴科范式一类表示
+*正则表达式 表示0或多个 
+add => multiple ( + multiple)*
+multiple=> NUMBER (* NUMBER)*
  */
 
 function toAst(tokenReader) {

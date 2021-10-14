@@ -7,7 +7,7 @@
 
 const parse = require('./parse')
 const evaluate = require('./evaluate')
-let source = '1+(1+3)*4/2'
+let source = '9-1-1+2+4*8/2/2*(1+2)'
 let ast = parse(source)
 console.log(JSON.stringify(ast, null, 2))
 let res = evaluate(ast)

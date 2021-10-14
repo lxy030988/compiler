@@ -17,7 +17,7 @@ const tokensNames = [
   RIGHT_PARA
 ]
 
-let RegExpObject = /([0-9]+)|(\+)|(\*)|(\-)|(\/)|(\()|(\))/g
+let RegExpObject = /(-?[0-9]+)|(\+)|(\*)|(\-)|(\/)|(\()|(\))/g
 
 function* gtokenizer(script) {
   let result
